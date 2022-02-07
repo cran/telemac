@@ -2,7 +2,7 @@
 check_file <- function(f, ext, check_rel = FALSE) {
   stopifnot(is.character(f) && length(f) == 1)
 
-  fileext <- dplyr::last(unlist(strsplit(f, ".", fixed = T)))
+  fileext <- tail(unlist(strsplit(f, ".", fixed = T)), 1)
   if (length(fileext) == 0 || fileext != ext)
     stop("File extension must be '.", ext, "'!", call. = F)
 
@@ -17,10 +17,6 @@ arrange_meshdata <- function(x, y, vars, values) {
     dplyr::mutate(variable = factor(.data$variable, levels = vars)) %>% # order of variable
     dplyr::arrange(.data$timestep, .data$variable) # correct order of timestep and variable
 }
-
-# get all unique edges of triangles from an ikle (no. of triangles x 3) matrix.
-# Output is a (no. of edges x 2) matrix (columns are edge nodes)
-get_tri_edg <- function(ikle) unique(t(apply(get_edges(ikle), 1, sort)))
 
 
 # SpatialLines to data.frame with columns x, y, and line (derived from cump)
@@ -71,3 +67,6 @@ interpol_privar <- function(x, p, output, ...) {
   list(values = do.call("interpol", args),
        unit = p$unit)
 }
+
+# convert character string to numeric vector (numbers separated by single space)
+tonum <- function(x) as.numeric(unlist(strsplit(x, " ")))
